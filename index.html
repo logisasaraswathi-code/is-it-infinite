@@ -1,35 +1,74 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Is It Infinite? ♾️</title>
-<link rel="stylesheet" href="style.css">
+<title>Is It Infinite? Quiz Battle</title>
+<style>
+body{
+    font-family: Arial;
+    text-align:center;
+    background:#111;
+    color:white;
+}
+.container{
+    margin-top:100px;
+}
+button{
+    padding:10px 20px;
+    margin:10px;
+    font-size:16px;
+    cursor:pointer;
+}
+</style>
 </head>
-
 <body>
 
-<h1>♾️ Is It Infinite? – Quiz Battle ⚔️</h1>
-<div id="score">Score: 0</div>
+<div class="container">
+    <h1>Is It Infinite?</h1>
+    <h2 id="question">Loading...</h2>
 
-<div id="levelSelect">
-    <h2>Select Level</h2>
-    <button class="levelBtn" onclick="startGame('easy')">Easy</button>
-    <button class="levelBtn" onclick="startGame('medium')">Medium</button>
-    <button class="levelBtn" onclick="startGame('hard')">Hard</button>
-</div>
-
-<div id="game" class="hidden">
-    <div id="timerContainer">
-        <div id="timerCircle">15</div>
+    <div>
+        <button onclick="checkAnswer(true)">Infinite</button>
+        <button onclick="checkAnswer(false)">Finite</button>
     </div>
-    <div id="question"></div>
-    <button class="finite" onclick="checkAnswer('Finite')">🟢 Finite</button>
-    <button class="infinite" onclick="checkAnswer('Infinite')">🔵 Infinite</button>
+
+    <h3 id="score">Score: 0</h3>
 </div>
 
-<div id="result" class="hidden"></div>
+<script>
+const questions = [
+    {text:"Are natural numbers infinite?", answer:true},
+    {text:"Are letters in English alphabet infinite?", answer:false},
+    {text:"Are real numbers infinite?", answer:true},
+    {text:"Are days in a week infinite?", answer:false},
+    {text:"Is the universe infinite?", answer:true}
+];
 
-<script src="script.js"></script>
+let current = 0;
+let score = 0;
+
+function loadQuestion(){
+    if(current >= questions.length){
+        document.getElementById("question").innerText = "Game Over!";
+        return;
+    }
+    document.getElementById("question").innerText = questions[current].text;
+}
+
+function checkAnswer(userAnswer){
+    if(current >= questions.length) return;
+
+    if(userAnswer === questions[current].answer){
+        score++;
+        document.getElementById("score").innerText = "Score: " + score;
+    }
+
+    current++;
+    setTimeout(loadQuestion, 500);
+}
+
+loadQuestion();
+</script>
+
 </body>
 </html>
