@@ -6,65 +6,181 @@
 <style>
 body{
     font-family: Arial;
-    text-align:center;
-    background:#111;
+    background:#0f172a;
     color:white;
+    text-align:center;
+    margin:0;
 }
 .container{
-    margin-top:100px;
+    margin-top:50px;
+}
+h1{
+    font-size:40px;
+}
+#question{
+    font-size:28px;
+    margin:30px;
 }
 button{
-    padding:10px 20px;
-    margin:10px;
-    font-size:16px;
+    padding:15px 30px;
+    font-size:18px;
+    margin:15px;
+    border:none;
     cursor:pointer;
+    border-radius:8px;
 }
+.finite{ background:#22c55e; }
+.infinite{ background:#3b82f6; }
+#score{
+    font-size:20px;
+    margin-top:10px;
+}
+.timer{
+    width:120px;
+    height:120px;
+    border-radius:50%;
+    border:10px solid #3b82f6;
+    margin:20px auto;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:30px;
+}
+.result{
+    margin-top:40px;
+}
+.correct{ color:#22c55e; }
+.wrong{ color:#ef4444; }
 </style>
 </head>
 <body>
 
 <div class="container">
     <h1>Is It Infinite?</h1>
-    <h2 id="question">Loading...</h2>
+    <div id="score">Score: 0</div>
+    <div class="timer" id="timer">15</div>
+    <div id="level"></div>
+    <div id="question"></div>
 
-    <div>
-        <button onclick="checkAnswer(true)">Infinite</button>
-        <button onclick="checkAnswer(false)">Finite</button>
+    <div id="buttons">
+        <button class="finite" onclick="checkAnswer(false)">🟢 Finite</button>
+        <button class="infinite" onclick="checkAnswer(true)">🔵 Infinite</button>
     </div>
 
-    <h3 id="score">Score: 0</h3>
+    <div class="result" id="result"></div>
 </div>
 
 <script>
 const questions = [
-    {text:"Are natural numbers infinite?", answer:true},
-    {text:"Are letters in English alphabet infinite?", answer:false},
-    {text:"Are real numbers infinite?", answer:true},
-    {text:"Are days in a week infinite?", answer:false},
-    {text:"Is the universe infinite?", answer:true}
+    // Easy
+    {text:"Whole numbers", answer:true, level:"Easy"},
+    {text:"Points on a line", answer:true, level:"Easy"},
+    {text:"Days in a week", answer:false, level:"Easy"},
+    {text:"Letters in English alphabet", answer:false, level:"Easy"},
+    {text:"Decimals between 1 and 2", answer:true, level:"Easy"},
+    // Medium
+    {text:"Prime numbers", answer:true, level:"Medium"},
+    {text:"Sand grains on Earth", answer:false, level:"Medium"},
+    {text:"Real numbers", answer:true, level:"Medium"},
+    {text:"Human population", answer:false, level:"Medium"},
+    {text:"Rational numbers", answer:true, level:"Medium"},
+    // Hard
+    {text:"Irrational numbers between 0 and 1", answer:true, level:"Hard"},
+    {text:"Even numbers", answer:true, level:"Hard"},
+    {text:"Digits in π", answer:true, level:"Hard"}
 ];
 
 let current = 0;
 let score = 0;
+let timer;
+let timeLeft = 15;
+let answered = 0;
+let maxQuestions = 10;
+let review = [];
+
+function startTimer(){
+    timeLeft = 15;
+    document.getElementById("timer").innerText = timeLeft;
+    timer = setInterval(()=>{
+        timeLeft--;
+        document.getElementById("timer").innerText = timeLeft;
+        if(timeLeft <= 0){
+            clearInterval(timer);
+            checkAnswer(null);
+        }
+    },1000);
+}
 
 function loadQuestion(){
-    if(current >= questions.length){
-        document.getElementById("question").innerText = "Game Over!";
+    if(answered >= maxQuestions || current >= questions.length){
+        showResult();
         return;
     }
-    document.getElementById("question").innerText = questions[current].text;
+    document.getElementById("level").innerText = 
+        "Level: " + questions[current].level;
+    document.getElementById("question").innerText = 
+        questions[current].text;
+    startTimer();
 }
 
 function checkAnswer(userAnswer){
-    if(current >= questions.length) return;
+    clearInterval(timer);
 
-    if(userAnswer === questions[current].answer){
-        score++;
-        document.getElementById("score").innerText = "Score: " + score;
+    let correct = questions[current].answer;
+    let isCorrect = (userAnswer === correct);
+
+    if(userAnswer === null){
+        score -=5;
+        review.push({q:questions[current].text, correct:correct, user:"No Answer"});
+    }
+    else if(isCorrect){
+        score +=10;
+        review.push({q:questions[current].text, correct:correct, user:userAnswer});
+    } else {
+        score -=5;
+        review.push({q:questions[current].text, correct:correct, user:userAnswer});
     }
 
+    if(score < 0) score = 0;
+    if(score > 100) score = 100;
+
+    document.getElementById("score").innerText = "Score: " + score;
+
     current++;
-    setTimeout(loadQuestion, 500);
+    answered++;
+
+    setTimeout(loadQuestion,800);
+}
+
+function showResult(){
+    document.getElementById("buttons").style.display="none";
+    document.getElementById("timer").style.display="none";
+    document.getElementById("level").style.display="none";
+    document.getElementById("question").innerText="Game Finished!";
+
+    let message="";
+    if(score <=50){
+        message="Still learning…";
+    } else if(score <100){
+        message="Infinity Explorer!";
+    } else {
+        message="Infinity Master ♾️🔥";
+    }
+
+    let reviewHTML="<h2>"+message+"</h2>";
+    reviewHTML+="<h3>Final Score: "+score+"/100</h3><br>";
+
+    review.forEach(r=>{
+        let correctText = r.correct ? "Infinite" : "Finite";
+        let userText = r.user===null ? "No Answer" : (r.user ? "Infinite" : "Finite");
+        let className = (r.user===r.correct) ? "correct" : "wrong";
+
+        reviewHTML += "<p class='"+className+"'>"+r.q+
+        " → Your Answer: "+userText+
+        " | Correct: "+correctText+"</p>";
+    });
+
+    document.getElementById("result").innerHTML=reviewHTML;
 }
 
 loadQuestion();
