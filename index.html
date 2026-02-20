@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Is It Infinite? ♾️</title>
+<link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<h1>♾️ Is It Infinite? – Quiz Battle ⚔️</h1>
+<div id="score">Score: 0</div>
+
+<div id="levelSelect">
+    <h2>Select Level</h2>
+    <button class="levelBtn" onclick="startGame('easy')">Easy</button>
+    <button class="levelBtn" onclick="startGame('medium')">Medium</button>
+    <button class="levelBtn" onclick="startGame('hard')">Hard</button>
+</div>
+
+<div id="game" class="hidden">
+    <div id="timerContainer">
+        <div id="timerCircle">15</div>
+    </div>
+    <div id="question"></div>
+    <button class="finite" onclick="checkAnswer('Finite')">🟢 Finite</button>
+    <button class="infinite" onclick="checkAnswer('Infinite')">🔵 Infinite</button>
+</div>
+
+<div id="result" class="hidden"></div>
+
+<script src="script.js"></script>
+</body>
+</html>
